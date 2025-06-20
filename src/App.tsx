@@ -7,6 +7,8 @@ import DebtTracker from "./components/debs/DebsTracker";
 import BudgetTracker from "./components/debs/BudgetTracker";
 import FinancialReport from "./components/debs/FinancialReports";
 import UserManagement from "./components/debs/UserManagement";
+import LoginForm from "./components/forms/LoginForm";
+import RegisterForm from "./components/forms/RegisterForm";
 
 export const App = () => {
   return (
@@ -21,6 +23,8 @@ export const App = () => {
           <Route path="/reports" element={<FinancialReport />} />
           <Route path="/users" element={<UserManagement />} />
         </Route>
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/register" element={<RegisterForm />} />
       </Routes>
     </Router>
   );

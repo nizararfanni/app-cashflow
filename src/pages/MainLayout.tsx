@@ -1,8 +1,25 @@
 import React, { useState } from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import axios from "axios";
 
 const MainLayout: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const { user, logOut } = useAuth();
+  const Navigate = useNavigate();
+
+  const handleLogOut = async () => {
+    try {
+      await axios.post("http://localhost:4000/logout", null, {
+        withCredentials: true,
+      });
+
+      logOut();
+      Navigate("/login");
+    } catch (error) {
+      console.error("gagal error", error);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100 relative">
@@ -72,9 +89,10 @@ const MainLayout: React.FC = () => {
             ☰
           </button>
           <div className="flex items-center gap-4">
-            <span className="text-gray-600">Hi, User</span>
-            <button className="text-xl">🔔</button>
-            <button className="text-red-500">Logout</button>
+            <span className="text-gray-600">Hi,{user?.username}</span>
+            <button className="text-red-500" onClick={handleLogOut}>
+              Logout
+            </button>
           </div>
         </header>
         <main className="p-6">
