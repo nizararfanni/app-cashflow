@@ -1,18 +1,19 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useTransaction } from "../context/TransactionContext";
 
+
 interface Transaction {
   description: string;
   amount: number;
   category: string;
-  type: "pemasukan" | "pengeluaran";
+  type: "income" | "expense";
 }
 const TransactionForm: React.FC = () => {
   const [form, setForm] = useState<Transaction>({
     description: "",
     amount: 0,
     category: "",
-    type: "pemasukan",
+    type: "income",
   });
   const { addTransaction } = useTransaction();
 
@@ -26,11 +27,14 @@ const TransactionForm: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    //kirim ke state global
-    addTransaction(form);
-    console.log(form);
+    try {
+      //kirim ke state global dan db
+      await addTransaction(form);
+    } catch (err) {
+      console.error("Gagal simpan:", err);
+    }
   };
 
   //button hapus
@@ -39,7 +43,7 @@ const TransactionForm: React.FC = () => {
       description: "",
       amount: 0,
       category: "",
-      type: "pemasukan",
+      type: "income",
     });
   };
 
@@ -92,8 +96,8 @@ const TransactionForm: React.FC = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded"
             >
-              <option value="pemasukan">Pemasukan</option>
-              <option value="pengeluaran">Pengeluaran</option>
+              <option value="income">Pemasukan</option>
+              <option value="expense">Pengeluaran</option>
             </select>
           </div>
           <div className="flex gap-4">

@@ -1,7 +1,7 @@
-
 import { useTransaction } from "../context/TransactionContext";
 import BalanceChart from "../components/charts/BalanceChart";
 import { useFinance } from "../context/FinanceContext";
+import { useEffect } from "react";
 
 interface DashboardCardProps {
   title: string;
@@ -21,8 +21,12 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 );
 
 const Dashboard = () => {
-  const { transactions } = useTransaction();
+  const { transactions, getHistoryTransaksi } = useTransaction();
   const { balance, income, expense } = useFinance();
+
+  useEffect(() => {
+    getHistoryTransaksi();
+  }, [balance, income, expense]);
 
   return (
     <div>
@@ -53,7 +57,7 @@ const Dashboard = () => {
               {trx.amount.toLocaleString("id-ID")}
               <strong
                 className={`ml-2 ${
-                  trx.type === "pengeluaran" ? "text-red-600" : "text-green-600"
+                  trx.type === "income" ? "text-red-600" : "text-green-600"
                 }`}
               >
                 ({trx.type})

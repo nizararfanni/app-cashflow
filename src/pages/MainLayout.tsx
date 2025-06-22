@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
 const MainLayout: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
-  const { user, logOut } = useAuth();
+  const { user, logOut, accessToken } = useAuth();
   const Navigate = useNavigate();
 
   const handleLogOut = async () => {
@@ -20,6 +20,11 @@ const MainLayout: React.FC = () => {
       console.error("gagal error", error);
     }
   };
+  useEffect(() => {
+    if (!accessToken) {
+      Navigate("/login");
+    }
+  }, [accessToken]);
 
   return (
     <div className="flex min-h-screen bg-gray-100 relative">

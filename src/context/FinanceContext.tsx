@@ -23,14 +23,14 @@ export const FinanceContextProvider = ({
   useEffect(() => {
     //jumlah saldo
     const totalIncome = transactions
-      .filter((trx) => trx.type === "pemasukan")
-      .reduce((total, trx) => total + trx.amount, 0);
+      .filter((trx) => trx.type === "income")
+      .reduce((total, trx) => total + Number(trx.amount), 0);
     setIncome(totalIncome);
 
     //jumlah pengeluaran
     const totalExpense = transactions
-      .filter((trx) => trx.type === "pengeluaran")
-      .reduce((total, trx) => total + trx.amount, 0);
+      .filter((trx) => trx.type === "expense")
+      .reduce((total, trx) => total + Number(trx.amount), 0);
     setExpense(totalExpense);
 
     //jumlah saldo
