@@ -10,24 +10,23 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement);
 
-
 interface Transaction {
   description: string;
   amount: number;
   category: string;
-  type: "pemasukan" | "pengeluaran";
+  type: "income" | "expense";
 }
 const GrafikCharts = () => {
   const { transactions }: { transactions: Transaction[] } = useTransaction();
 
   // Filter hanya pengeluaran dari transaksi
   const expenseData: number[] = transactions
-    .filter((trx) => trx.type === "pengeluaran")
+    .filter((trx) => trx.type === "expense")
     .map((trx) => trx.amount);
 
   // Filter hanya pemasukan dari transaksi
   const incomeeData: number[] = transactions
-    .filter((trx) => trx.type === "pemasukan")
+    .filter((trx) => trx.type === "income")
     .map((trx) => trx.amount);
 
   //  labels berdasarkan jumlah pengeluaran
@@ -36,15 +35,18 @@ const GrafikCharts = () => {
   );
 
   //total balance
-  const balanceData: number[] = transactions.reduce((acc : number[] , trx, index) => {
-    const prevBalance = index === 0 ? 0 : acc[index - 1];
-    const newBalance =
-      trx.type === "pemasukan"
-        ? prevBalance + trx.amount
-        : prevBalance - trx.amount;
-    // Tambahin saldo baru ke array
-    return [...acc, newBalance];
-  }, []);
+  const balanceData: number[] = transactions.reduce(
+    (acc: number[], trx, index) => {
+      const prevBalance = index === 0 ? 0 : acc[index - 1];
+      const newBalance =
+        trx.type === "income"
+          ? prevBalance + Number(trx.amount)
+          : prevBalance - Number(trx.amount);
+      // Tambahin saldo baru ke array
+      return [...acc, newBalance];
+    },
+    []
+  );
 
   return (
     <div>

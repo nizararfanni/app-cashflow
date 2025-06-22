@@ -1,16 +1,19 @@
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
-// ⚠️ Ini penting banget: wajib register dulu ArcElement
+// register ArcElement
 ChartJS.register(ArcElement, Tooltip, Legend);
-
 
 interface BalanceChartProps {
   balance?: number;
   income?: number;
   expense?: number;
 }
-const BalanceChart = ({ balance, income, expense }: BalanceChartProps) => {
+const BalanceChart = ({
+  balance = 0,
+  income = 0,
+  expense = 0,
+}: BalanceChartProps) => {
   const data = {
     labels: ["Saldo", "Pemasukan", "Pengeluaran"],
     datasets: [
@@ -26,7 +29,7 @@ const BalanceChart = ({ balance, income, expense }: BalanceChartProps) => {
   const options = {
     plugins: {
       legend: {
-        position: "bottom" as const, 
+        position: "bottom" as const,
       },
     },
   };
