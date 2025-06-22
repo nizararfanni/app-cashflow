@@ -53,7 +53,7 @@ const RegisterForm: React.FC = () => {
           className="text-red-400 font-bold
         text-sm text-center"
         >
-          {error}sfsdf
+          {error}
         </p>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Nama</label>

@@ -1,13 +1,11 @@
 import { createContext, useState, useContext } from "react";
 
-// 1. Definisikan tipe data user (kalau user lebih kompleks, sesuaikan)
 type User = {
   username: string;
   email?: string;
   id?: number;
 };
 
-// 2. Definisikan tipe context
 type AuthContextType = {
   user: User | null;
   accessToken: string | null;
@@ -15,15 +13,12 @@ type AuthContextType = {
   logOut: () => void;
 };
 
-// 3. Buat context dengan default null dan cast ke AuthContextType
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// 4. Tipe props provider
 type AuthProviderProps = {
   children: React.ReactNode;
 };
 
-// 5. Buat provider
 export const AuthContextProvider: React.FC<AuthProviderProps> = ({
   children,
 }) => {
@@ -47,7 +42,6 @@ export const AuthContextProvider: React.FC<AuthProviderProps> = ({
   );
 };
 
-// 6. Custom hook buat konsumsi context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be used within AuthProvider");
