@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
 
 interface Debt {
   id: number;
@@ -12,24 +14,44 @@ const DebtTracker = () => {
   const [debts, setDebts] = useState<Debt[]>([]);
   const [newDebt, setNewDebt] = useState({ name: "", amount: "", dueDate: "" });
   const [error, setError] = useState("");
+  const { accessToken } = useAuth();
 
-  const addDebt = () => {
-    if (!newDebt.name || !newDebt.amount || !newDebt.dueDate) {
-      return setError("Semua field harus diisi");
+  const fetchDebts = async () => {
+    try {
+      const res = await axios.get("http://localhost:4000/owe", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        withCredentials: true,
+      });
+      setDebts(res.data);
+    } catch (err) {
+      console.error("Gagal ambil daftar hutang:", err);
     }
+  };
 
-    setDebts([
-      ...debts,
-      {
-        id: debts.length + 1,
+  useEffect(() => {
+    if (accessToken) fetchDebts();
+  }, [accessToken]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const payload = {
         name: newDebt.name,
-        amount: parseInt(newDebt.amount),
-        dueDate: newDebt.dueDate,
-        status: "Belum Lunas",
-      },
-    ]);
-    setError("");
-    setNewDebt({ name: "", amount: "", dueDate: "" });
+        amount: Number(newDebt.amount),
+        due_date: newDebt.dueDate,
+      };
+
+      await axios.post("http://localhost:4000/owe", payload, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        withCredentials: true,
+      });
+
+      setNewDebt({ name: "", amount: "", dueDate: "" });
+      fetchDebts();
+    } catch (error) {
+      setError("Gagal menambahkan hutang");
+      console.error("Gagal tambah hutang:", error);
+    }
   };
 
   const markAsPaid = (id: number) => {
@@ -40,21 +62,11 @@ const DebtTracker = () => {
     );
   };
 
-  //add calculate days remaining
   const calculateDaysRemaining = (dueDate: string) => {
-    // Ambil tanggal hari ini
     const today = new Date();
-    // Konversi tanggal jatuh tempo ke format Date
     const due = new Date(dueDate);
-    // console.log(due.getTime());
-    // console.log(today.getTime());
-
-    // Hitung selisih waktu (milidetik)
     const difference = due.getTime() - today.getTime();
-    // console.log(difference);
-    // Konversi ke hari
     const daysRemaining = Math.ceil(difference / (1000 * 60 * 60 * 24));
-
     return daysRemaining > 0 ? `${daysRemaining} hari lagi` : "Terlambat!";
   };
 
@@ -62,8 +74,7 @@ const DebtTracker = () => {
     <div className="max-w-xl mx-auto p-6 bg-white shadow rounded-lg">
       <h2 className="text-2xl font-bold mb-4">Hutang Piutang</h2>
 
-      {/* Form Tambah Hutang */}
-      <div className="mb-6">
+      <form className="mb-6" onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Nama"
@@ -85,17 +96,13 @@ const DebtTracker = () => {
           onChange={(e) => setNewDebt({ ...newDebt, dueDate: e.target.value })}
         />
         <div className="flex justify-center">
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded-md"
-            onClick={addDebt}
-          >
+          <button className="bg-blue-600 text-white px-4 py-2 rounded-md">
             Tambah Hutang
           </button>
         </div>
         {error && <p className="text-red-600 mt-2">{error}</p>}
-      </div>
+      </form>
 
-      {/* Daftar Hutang */}
       <ul>
         {debts.map((debt) => (
           <li
@@ -107,7 +114,7 @@ const DebtTracker = () => {
             <div>
               <strong>{debt.name}</strong> - Rp{" "}
               {debt.amount.toLocaleString("id-ID")} (Jatuh Tempo: {debt.dueDate}{" "}
-              ({calculateDaysRemaining(debt.dueDate)}) )
+              ({calculateDaysRemaining(debt.dueDate)}))
             </div>
             {debt.status === "Belum Lunas" && (
               <button
